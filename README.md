@@ -1,7 +1,7 @@
 # GitHub hawk - a public repo monitor
-Cloudflare worker that processes GitHub repository webhooks and forwards the interesting ones:
-* New public repository is created
-* Private repo has been made public
+Cloudflare worker that processes GitHub repository webhooks and forwards the interesting ones through a Slack hook:
+* New public repository is created (`created` action with `private` set to `false`)
+* Private repo has been made public (`publicized` action)
 
 ## How to run
 * Deploy to Cloudflare with `wrangler publish`
