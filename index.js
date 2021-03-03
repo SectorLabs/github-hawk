@@ -40,6 +40,23 @@ function createResponse(message, status = 200) {
 }
 
 /**
+ * Calls a Slack webhook with the event of interest
+ * @param {Object} payload - the GitHub event payload
+ */
+async function forwardEvent(payload) {
+    return await fetch(SLACK_HOOK_URL, {
+        headers: {
+            'Content-type': 'application/json; charset: utf8',
+        },
+        method: 'POST',
+        body: JSON.stringify({
+            text: `Repository ${payload['repository']['full_name']} is now public. Event: ${payload['action']}`,
+            icon_emoji: ':warning:',
+        }),
+    });
+}
+
+/**
  * Process GitHub repository events
  * @param {Request} request
  */
@@ -57,8 +74,10 @@ async function handleRequest(request) {
             payload['action'] == 'created' &&
             payload['repository']['private'] == false
         ) {
+            await forwardEvent(payload);
             return createResponse('Proxied as public creation');
         } else if (payload['action'] == 'publicized') {
+            await forwardEvent(payload);
             return createResponse('Proxied as publicized');
         }
     }
